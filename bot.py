@@ -24,7 +24,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if user.id in ADMIN_IDS:
         kb.append([InlineKeyboardButton("⚙️ پنل ادمین", callback_data="admin")])
     await update.message.reply_text(
-        f"👋 سلام {user.first_name}!\nبه ربات 20VPN خوش اومدی.",
+        f"👋 سلام {user.first_name}!\nبه ربات VPN خوش اومدی.",
         reply_markup=InlineKeyboardMarkup(kb)
     )
 
@@ -61,10 +61,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data == "my_sub":
         sub = get_user_subscription(user_id)
         if sub:
-            volume_text = "نامحدود" if sub[6] == 0 else f"{sub[6]} گیگابایت"
-            text = (f"✅ اشتراک فعال داری!\n\n"
-                    f"📦 حجم: {volume_text}\n"
-                    f"📅 تاریخ انقضا: {sub[5][:10]}\n\n"
+            from datetime import datetime
+            volume_text = "♾ نامحدود" if sub[6] == 0 else f"{sub[6]} گیگابایت"
+            end_date = datetime.fromisoformat(sub[5])
+            now = datetime.now()
+            days_left = (end_date - now).days
+            if days_left > 0:
+                status = f"✅ فعال - {days_left} روز مانده"
+            elif days_left == 0:
+                status = "⚠️ امروز منقضی میشه!"
+            else:
+                status = "❌ منقضی شده"
+            text = (f"📋 اشتراک شما:\n\n"
+                    f"وضعیت: {status}\n"
+                    f"📅 انقضا: {sub[5][:10]}\n\n"
                     f"🔑 کانفیگ:\n{sub[3]}")
         else:
             text = "❌ اشتراک فعالی نداری.\nبرای خرید از منو استفاده کن."
@@ -72,7 +82,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 برگشت", callback_data="back_main")]]))
 
     elif data == "support":
-        await query.edit_message_text("📞 برای پشتیبانی به @DARMUNDEH پیام بده.",
+        await query.edit_message_text("📞 برای پشتیبانی به @darmundeh پیام بده.",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 برگشت", callback_data="back_main")]]))
 
     elif data == "back_main":
@@ -218,6 +228,7 @@ async def receive_broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 def main():
+    import os
     init_db()
     app = Application.builder().token(BOT_TOKEN).build()
     conv = ConversationHandler(
@@ -232,8 +243,19 @@ def main():
     )
     app.add_handler(CommandHandler("start", start))
     app.add_handler(conv)
-    print("ربات روشن شد...")
-    app.run_polling(drop_pending_updates=True)
+    webhook_url = os.environ.get("WEBHOOK_URL")
+    if webhook_url:
+        print("ربات با Webhook روشن شد...")
+        port = int(os.environ.get("PORT", 8443))
+        app.run_webhook(
+            listen="0.0.0.0",
+            port=port,
+            webhook_url=webhook_url,
+            drop_pending_updates=True,
+        )
+    else:
+        print("ربات با Polling روشن شد...")
+        app.run_polling(drop_pending_updates=True)
 
 if __name__ == "__main__":
     main()
