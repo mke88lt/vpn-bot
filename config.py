@@ -9,5 +9,5 @@ PLANS = {
     "1month_100gb": {"name": "۱ ماهه - ۱۰۰ گیگ", "price": 2050, "days": 30, "volume_gb": 100},  
 }
 
-CARD_NUMBER = "6219-8618-0978-1759"
+CARD_NUMBER = "1759-0978-8618-6219"
 CARD_OWNER = "مبین مرادی"
