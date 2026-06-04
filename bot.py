@@ -24,7 +24,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if user.id in ADMIN_IDS:
         kb.append([InlineKeyboardButton("⚙️ پنل ادمین", callback_data="admin")])
     await update.message.reply_text(
-        f"👋 سلام {user.first_name}!\nبه ربات VPN خوش اومدی.",
+        f"👋 سلام {user.first_name}!\nبه ربات 20VPN خوش اومدی.",
         reply_markup=InlineKeyboardMarkup(kb)
     )
 
@@ -72,7 +72,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 برگشت", callback_data="back_main")]]))
 
     elif data == "support":
-        await query.edit_message_text("📞 برای پشتیبانی به @YourSupportUsername پیام بده.",
+        await query.edit_message_text("📞 برای پشتیبانی به @DARMUNDEH پیام بده.",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 برگشت", callback_data="back_main")]]))
 
     elif data == "back_main":
