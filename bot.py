@@ -228,7 +228,6 @@ async def receive_broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 def main():
-    import os
     init_db()
     app = Application.builder().token(BOT_TOKEN).build()
     conv = ConversationHandler(
@@ -243,19 +242,8 @@ def main():
     )
     app.add_handler(CommandHandler("start", start))
     app.add_handler(conv)
-    webhook_url = os.environ.get("WEBHOOK_URL")
-    if webhook_url:
-        print("ربات با Webhook روشن شد...")
-        port = int(os.environ.get("PORT", 8443))
-        app.run_webhook(
-            listen="0.0.0.0",
-            port=port,
-            webhook_url=webhook_url,
-            drop_pending_updates=True,
-        )
-    else:
-        print("ربات با Polling روشن شد...")
-        app.run_polling(drop_pending_updates=True)
+    print("ربات روشن شد...")
+    app.run_polling(drop_pending_updates=True)
 
 if __name__ == "__main__":
     main()
